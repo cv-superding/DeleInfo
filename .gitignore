@@ -1,0 +1,15 @@
+# 构建产物与本地工具链，不入库
+/dotnet/
+.dotnet/
+dist/
+[Bb]in/
+[Oo]bj/
+
+# 运行期产物：快照清单可能含账号名，绝不上传
+snapshots/
+*.log
+
+# 临时/调试文件
+.ui-*
+.tmp-*
+.check.*
