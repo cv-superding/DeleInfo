@@ -3,14 +3,12 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml">
   <Application.Resources>
-    <Style TargetType="Button">
-      <Setter Property="Padding" Value="10,4" />
-      <Setter Property="Margin" Value="0,0,8,0" />
-      <Setter Property="MinWidth" Value="96" />
-    </Style>
-    <Style TargetType="CheckBox">
-      <Setter Property="VerticalAlignment" Value="Center" />
-      <Setter Property="Margin" Value="0,0,14,0" />
-    </Style>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <!-- 索引 0 是配色令牌，换主题时整体替换；索引 1 是控件样式，只引用令牌名。 -->
+        <ResourceDictionary Source="Themes/Light.xaml" />
+        <ResourceDictionary Source="Themes/Controls.xaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
   </Application.Resources>
 </Application>

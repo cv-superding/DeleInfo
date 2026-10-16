@@ -1,0 +1,40 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- 亮色设计令牌。所有控件只引用这些语义名，换肤时整套替换即可。 -->
+  <Color x:Key="AccentColor">#FF4F46E5</Color>
+  <Color x:Key="AccentHoverColor">#FF4338CA</Color>
+  <Color x:Key="AccentPressedColor">#FF3730A3</Color>
+  <Color x:Key="DangerColor">#FFDC2626</Color>
+  <Color x:Key="WarnColor">#FFB45309</Color>
+  <Color x:Key="OkColor">#FF15803D</Color>
+
+  <SolidColorBrush x:Key="WindowBackground" Color="#FFF6F7FB" />
+  <SolidColorBrush x:Key="SurfaceBrush" Color="#FFFFFFFF" />
+  <SolidColorBrush x:Key="SurfaceAltBrush" Color="#FFF1F2F7" />
+  <SolidColorBrush x:Key="DividerBrush" Color="#FFE3E5EC" />
+  <SolidColorBrush x:Key="HoverBrush" Color="#FFEFF0F7" />
+
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="#FF14161F" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="#FF5B6072" />
+  <SolidColorBrush x:Key="TextTertiaryBrush" Color="#FF8A90A2" />
+  <SolidColorBrush x:Key="TextOnAccentBrush" Color="#FFFFFFFF" />
+
+  <SolidColorBrush x:Key="AccentBrush" Color="{StaticResource AccentColor}" />
+  <SolidColorBrush x:Key="AccentHoverBrush" Color="{StaticResource AccentHoverColor}" />
+  <SolidColorBrush x:Key="AccentPressedBrush" Color="{StaticResource AccentPressedColor}" />
+  <SolidColorBrush x:Key="DangerBrush" Color="{StaticResource DangerColor}" />
+  <SolidColorBrush x:Key="WarnBrush" Color="{StaticResource WarnColor}" />
+  <SolidColorBrush x:Key="OkBrush" Color="{StaticResource OkColor}" />
+
+  <SolidColorBrush x:Key="ChipBackground" Color="#FFFFFFFF" />
+  <SolidColorBrush x:Key="ChipBorder" Color="#FFD8DBE6" />
+  <SolidColorBrush x:Key="ChipCheckedBackground" Color="#FFEDEBFF" />
+  <SolidColorBrush x:Key="ChipCheckedBorder" Color="{StaticResource AccentColor}" />
+
+  <Thickness x:Key="CardPadding">16,13</Thickness>
+  <CornerRadius x:Key="CardRadius">12</CornerRadius>
+  <CornerRadius x:Key="ControlRadius">8</CornerRadius>
+  <CornerRadius x:Key="PillRadius">999</CornerRadius>
+
+</ResourceDictionary>

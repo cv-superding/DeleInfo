@@ -1,0 +1,313 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
+
+  <!-- 键盘焦点环：默认那个椭圆虚线框跟圆角控件完全不搭，但焦点可见性要保留，所以换成圆角描边 -->
+  <Style x:Key="RoundFocus">
+    <Setter Property="Control.Template">
+      <Setter.Value>
+        <ControlTemplate>
+          <Border Margin="-3" CornerRadius="11" BorderBrush="{DynamicResource AccentBrush}"
+                  BorderThickness="1.6" SnapsToDevicePixels="True" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ============ 文字 ============ -->
+  <Style x:Key="Title" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="Segoe UI Variable Display, Segoe UI" />
+    <Setter Property="FontSize" Value="19" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+  </Style>
+
+  <Style x:Key="Subtitle" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+
+  <Style x:Key="SectionTitle" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+  </Style>
+
+  <Style x:Key="Caption" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI" />
+    <Setter Property="FontSize" Value="11.5" />
+    <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+  </Style>
+
+  <Style x:Key="Body" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+  </Style>
+
+  <Style x:Key="StatValue" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="Segoe UI Variable Display, Segoe UI" />
+    <Setter Property="FontSize" Value="24" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+  </Style>
+
+  <Style x:Key="StatLabel" TargetType="TextBlock" BasedOn="{StaticResource Caption}">
+    <Setter Property="FontSize" Value="11" />
+  </Style>
+
+  <!-- ============ 主按钮 ============ -->
+  <Style x:Key="PrimaryButton" TargetType="Button">
+    <Setter Property="Foreground" Value="{DynamicResource TextOnAccentBrush}" />
+    <Setter Property="Background" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Padding" Value="18,9" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="SnapsToDevicePixels" Value="True" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource RoundFocus}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Ring" CornerRadius="9" Background="{TemplateBinding Background}"
+                  Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Ring" Property="Background" Value="{DynamicResource AccentHoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Ring" Property="Background" Value="{DynamicResource AccentPressedBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter TargetName="Ring" Property="Background" Value="{DynamicResource DividerBrush}" />
+              <Setter Property="Foreground" Value="{DynamicResource TextTertiaryBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ============ 次级按钮 ============ -->
+  <Style x:Key="SecondaryButton" TargetType="Button">
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="Background" Value="{DynamicResource SurfaceBrush}" />
+    <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Padding" Value="14,8" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="SnapsToDevicePixels" Value="True" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource RoundFocus}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="Button">
+          <Border x:Name="Ring" CornerRadius="9" Background="{TemplateBinding Background}"
+                  BorderBrush="{DynamicResource ChipBorder}" BorderThickness="1"
+                  Padding="{TemplateBinding Padding}">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Ring" Property="Background" Value="{DynamicResource HoverBrush}" />
+              <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+              <Setter TargetName="Ring" Property="Background" Value="{DynamicResource SurfaceAltBrush}" />
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+              <Setter Property="Opacity" Value="0.4" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ============ 危险动作按钮 ============ -->
+  <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource SecondaryButton}">
+    <Setter Property="Foreground" Value="{DynamicResource DangerBrush}" />
+  </Style>
+
+  <!-- ============ 图标按钮（标题栏、折叠箭头） ============ -->
+  <Style x:Key="IconToggle" TargetType="ToggleButton">
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    <Setter Property="FontFamily" Value="Segoe MDL2 Assets" />
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="Width" Value="34" />
+    <Setter Property="Height" Value="30" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ToggleButton">
+          <Border x:Name="Ring" CornerRadius="8" Background="Transparent">
+            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Ring" Property="Background" Value="{DynamicResource HoverBrush}" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Ring" Property="Background" Value="{DynamicResource ChipCheckedBackground}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ============ 选项芯片（取代生硬的 CheckBox 行） ============ -->
+  <Style x:Key="Chip" TargetType="CheckBox">
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+    <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI" />
+    <Setter Property="FontSize" Value="12.5" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="FocusVisualStyle" Value="{StaticResource RoundFocus}" />
+    <Setter Property="Margin" Value="0,0,8,0" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <Border x:Name="Ring" CornerRadius="999" Background="{DynamicResource ChipBackground}"
+                  BorderBrush="{DynamicResource ChipBorder}" BorderThickness="1" Padding="12,6">
+                    <StackPanel Orientation="Horizontal">
+                      <TextBlock x:Name="Mark" Text="&#xE73E;" FontFamily="Segoe MDL2 Assets"
+                                 FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"
+                                 Foreground="{DynamicResource AccentBrush}" Visibility="Collapsed" />
+                      <ContentPresenter VerticalAlignment="Center" />
+                    </StackPanel>
+          </Border>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Ring" Property="Background" Value="{DynamicResource ChipCheckedBackground}" />
+              <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource ChipCheckedBorder}" />
+              <Setter TargetName="Mark" Property="Visibility" Value="Visible" />
+              <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Ring" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ============ 列表里的方形勾选框 ============ -->
+  <Style x:Key="SquareCheck" TargetType="CheckBox">
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="CheckBox">
+          <Grid Width="19" Height="19">
+            <Border x:Name="Box" CornerRadius="5" Background="{DynamicResource SurfaceBrush}"
+                    BorderBrush="{DynamicResource ChipBorder}" BorderThickness="1.4" />
+            <TextBlock x:Name="Tick" Text="&#xE73E;" FontFamily="Segoe MDL2 Assets" FontSize="11"
+                       Foreground="{DynamicResource TextOnAccentBrush}"
+                       HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed" />
+            <!-- 三态里的"部分选中"用短横，不用图标字体，避免豆腐块 -->
+            <Border x:Name="Dash" Width="9" Height="2.6" CornerRadius="2" Visibility="Collapsed"
+                    Background="{DynamicResource TextOnAccentBrush}"
+                    HorizontalAlignment="Center" VerticalAlignment="Center" />
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsChecked" Value="True">
+              <Setter TargetName="Box" Property="Background" Value="{DynamicResource AccentBrush}" />
+              <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+              <Setter TargetName="Tick" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsChecked" Value="{x:Null}">
+              <Setter TargetName="Box" Property="Background" Value="{DynamicResource AccentBrush}" />
+              <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+              <Setter TargetName="Dash" Property="Visibility" Value="Visible" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="Box" Property="BorderBrush" Value="{DynamicResource AccentBrush}" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ============ 状态徽标 ============ -->
+  <Style x:Key="Badge" TargetType="Border">
+    <Setter Property="CornerRadius" Value="999" />
+    <Setter Property="Padding" Value="9,3" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Background" Value="{DynamicResource SurfaceAltBrush}" />
+  </Style>
+
+  <Style x:Key="BadgeText" TargetType="TextBlock">
+    <Setter Property="FontFamily" Value="Segoe UI Variable Text, Segoe UI" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+    <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}" />
+  </Style>
+
+  <!-- ============ 细滚动条 ============ -->
+  <Style TargetType="ScrollBar">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Width" Value="11" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ScrollBar">
+          <Grid Background="Transparent">
+            <Track x:Name="PART_Track" IsDirectionReversed="True">
+              <Track.Thumb>
+                <Thumb>
+                  <Thumb.Template>
+                    <ControlTemplate TargetType="Thumb">
+                      <Border CornerRadius="999" Margin="3,0" Background="{DynamicResource ChipBorder}" />
+                    </ControlTemplate>
+                  </Thumb.Template>
+                </Thumb>
+              </Track.Thumb>
+              <Track.IncreaseRepeatButton>
+                <RepeatButton Command="ScrollBar.PageDownCommand" Opacity="0" Focusable="False" />
+              </Track.IncreaseRepeatButton>
+              <Track.DecreaseRepeatButton>
+                <RepeatButton Command="ScrollBar.PageUpCommand" Opacity="0" Focusable="False" />
+              </Track.DecreaseRepeatButton>
+            </Track>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="Orientation" Value="Horizontal">
+              <Setter Property="Width" Value="Auto" />
+              <Setter Property="Height" Value="11" />
+            </Trigger>
+            <Trigger Property="IsMouseOver" Value="True">
+              <Setter TargetName="PART_Track" Property="Opacity" Value="1" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+  <!-- ============ 进度条 ============ -->
+  <Style x:Key="ThinProgress" TargetType="ProgressBar">
+    <Setter Property="Height" Value="5" />
+    <Setter Property="Foreground" Value="{DynamicResource AccentBrush}" />
+    <Setter Property="Background" Value="{DynamicResource SurfaceAltBrush}" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="ProgressBar">
+          <Border CornerRadius="999" Background="{TemplateBinding Background}" ClipToBounds="True">
+            <Grid x:Name="PART_Track" ClipToBounds="True">
+              <Border x:Name="PART_Indicator" CornerRadius="999" HorizontalAlignment="Left"
+                      Background="{TemplateBinding Foreground}" />
+            </Grid>
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
+</ResourceDictionary>

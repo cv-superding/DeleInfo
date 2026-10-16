@@ -48,7 +48,10 @@ public sealed class RowItem : INotifyPropertyChanged
     public string Level => Target.Level == TraceLevel.Session ? "L1 登出" : "L2 凭据";
     public string Size => Fs.Human(Target.Bytes);
     public int Files => Target.FileCount;
-    public string Path => Target.Path;
+
+    /// <summary>不叫 Path：XAML 里 {Binding Path} 会被解析成绑定表达式自己的 Path 属性。</summary>
+    public string Location => Target.Path;
+
     public bool Reversible => Target.NeedsSnapshot;
 
     public void MarkDone(string text)
