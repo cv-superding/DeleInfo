@@ -11,6 +11,7 @@ public static class CleanerRegistry
         new ElectronAppCleaner(),
         new FirefoxCleaner(),
         new NativeAppCleaner(),
+        new DevCredentialCleaner(),
         new WindowsCredentialCleaner(),
     };
 

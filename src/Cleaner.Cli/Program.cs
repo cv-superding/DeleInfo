@@ -45,6 +45,10 @@ switch (opts.Command)
     case "purge":
         return RunPurge(opts);
 
+    case "history":
+        RenderHistory(opts);
+        return 0;
+
     default:
         Console.Error.WriteLine($"未知命令：{opts.Command}");
         PrintHelp();
@@ -55,10 +59,33 @@ static ScanResult RunScan(Opts opts) =>
     new ScanEngine { MaxParallelism = opts.Workers }.Scan(CleanerRegistry.All, new ScanOptions
     {
         MaxLevel = opts.Level,
-        IncludeLowConfidence = opts.Has("include-low"),
+        IncludeLowConfidence = opts.Heuristic,
         Only = opts.Value("only"),
         Except = opts.Value("except"),
     });
+
+static void RenderHistory(Opts opts)
+{
+    var runs = RunHistory.Load(50);
+    if (runs.Count == 0)
+    {
+        Console.WriteLine("还没有清理记录。");
+        return;
+    }
+
+    Console.WriteLine($"最近 {runs.Count} 轮清理（历史文件：{RunHistory.HistoryDir}）：");
+    foreach (var r in runs)
+    {
+        Console.WriteLine($"  {r.At:yyyy-MM-dd HH:mm:ss}  {r.RunId}");
+        Console.WriteLine($"      {r.Mode}{(r.Forced ? " + 强删运行中的应用" : "")}，" +
+                          $"共 {r.Items} 项：擦除 {r.Removed}、快照 {r.Snapshotted}、占用跳过 {r.Locked}、失败 {r.Failed}，" +
+                          $"{Fs.Human(r.Bytes)}，{r.ElapsedMs:0}ms");
+        Console.WriteLine($"      涉及 {r.Apps.Length} 个应用：{string.Join("、", r.Apps.Take(8))}" +
+                          (r.Apps.Length > 8 ? $" … 等 {r.Apps.Length} 个" : ""));
+        if (r.Snapshotted > 0)
+            Console.WriteLine($"      ⚠ 该轮有 {r.Snapshotted} 项进了快照；未 purge 前令牌仍在磁盘上：deleinfo purge {r.RunId}");
+    }
+}
 
 static void TrySetConsole()
 {
@@ -90,7 +117,7 @@ static int RunClean(ScanResult scan, Opts opts)
         return 1;
     }
 
-    var hard = opts.Has("hard");
+    var hard = opts.Hard;
     var settings = new CleanSettings
     {
         Reversible = !hard,
@@ -318,8 +345,11 @@ static void PrintHelp()
   deleinfo snapshots [--snapshot-dir p]  列出快照
   deleinfo restore   <runId>             从快照还原
   deleinfo purge     <runId>             彻底删除快照内容（完成真正的擦除）
+  deleinfo history                       最近几轮清理的流水（含未 purge 的提醒）
 
 选项：
+  --preset <档>      logout=只登出(L1) | standard=默认(L1+L2) |
+                     deep=再加启发式与域凭据 | paranoid=deep 且不留快照直接物理擦除
   --level 1|2        1=仅会话登出，2=连保存的凭据一起清（默认 2）
   --only <子串>      只处理应用名包含该子串的项目
   --except <子串>    排除应用名包含该子串的项目
@@ -349,7 +379,20 @@ internal sealed class Opts
     public bool Has(string name) => _flags.Contains(name);
     public string? Value(string name) => _kv.TryGetValue(name, out var v) ? v : null;
 
-    public TraceLevel Level => Value("level") == "1" ? TraceLevel.Session : TraceLevel.Credential;
+    public TraceLevel Level => Value("level") switch
+    {
+        "1" => TraceLevel.Session,
+        "2" => TraceLevel.Credential,
+        _ => Preset == "logout" ? TraceLevel.Session : TraceLevel.Credential,
+    };
+
+    /// <summary>deep/paranoid 档等价于 --include-low；显式开关优先。</summary>
+    public bool Heuristic => Has("include-low") || Preset is "deep" or "paranoid";
+
+    /// <summary>paranoid 档等价于 --hard：不留快照，直接物理擦除。</summary>
+    public bool Hard => Has("hard") || Preset == "paranoid";
+
+    public string? Preset => Value("preset");
 
     public int Workers
     {
@@ -373,7 +416,7 @@ internal sealed class Opts
     {
         var o = new Opts();
         var valueNext = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
-            { "level", "only", "except", "snapshot-dir", "workers", "top" };
+            { "level", "only", "except", "snapshot-dir", "workers", "top", "preset" };
 
         for (var i = 0; i < args.Length; i++)
         {

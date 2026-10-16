@@ -1,6 +1,7 @@
 using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using DeleInfo.Core;
 using DeleInfo.Core.Model;
 using DeleInfo.Core.Util;
 
@@ -41,9 +42,7 @@ public sealed class SnapshotStore
     {
         // 清单必须落在与 exe 位置无关的稳定目录，否则从 U 盘/另一个副本运行就找不到快照、
         // 既不能还原也不能 purge——而那些令牌还原地躺在磁盘上。
-        Root = root ?? Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-            "DeleInfo", "snapshots");
+        Root = root ?? DataPaths.Snapshots;
         Directory.CreateDirectory(Root);
     }
 

@@ -1,5 +1,6 @@
 using System.IO;
 using DeleInfo.Core.Model;
+using DeleInfo.Core.Util;
 
 namespace DeleInfo.Core.Cleaners;
 
@@ -285,6 +286,12 @@ public sealed class NativeAppCleaner : ICleaner
                 return null;
 
             var text = File.ReadAllText(file);
+
+            // 先认真实令牌形状（比键名可靠），再退回键名。
+            var token = Secrets.FindToken(text);
+            if (token is not null)
+                return token;
+
             foreach (var key in EvidenceKeys)
             {
                 if (text.Contains(key, StringComparison.OrdinalIgnoreCase))

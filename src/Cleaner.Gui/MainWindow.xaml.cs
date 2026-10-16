@@ -16,6 +16,7 @@ public partial class MainWindow : Window
     private readonly ObservableCollection<RowItem> _rows = new();
     private readonly SnapshotStore _store = new();
     private string? _lastRunId;
+    private CancellationTokenSource? _cts;
 
     public MainWindow()
     {
@@ -34,11 +35,40 @@ public partial class MainWindow : Window
         LogBox.ScrollToEnd();
     }
 
-    private void SetBusy(bool busy)
+    private void SetBusy(bool busy, int total = 0)
     {
         BtnScan.IsEnabled = !busy;
         BtnClean.IsEnabled = !busy && _rows.Any(r => r.Selected);
         BtnHard.IsEnabled = BtnClean.IsEnabled;
+        BtnCancel.IsEnabled = busy;
+        Progress.Maximum = Math.Max(1, total);
+        Progress.Value = 0;
+    }
+
+    private void OnCancel(object sender, RoutedEventArgs e)
+    {
+        _cts?.Cancel();
+        BtnCancel.IsEnabled = false;
+        Log("正在取消：已经开始处理的项目会完成，剩下的不动。");
+    }
+
+    private void OnHistory(object sender, RoutedEventArgs e)
+    {
+        var runs = RunHistory.Load(20);
+        if (runs.Count == 0)
+        {
+            Log("还没有清理记录。");
+            return;
+        }
+
+        Log($"最近 {runs.Count} 轮清理：");
+        foreach (var r in runs)
+        {
+            Log($"  {r.At:yyyy-MM-dd HH:mm:ss}  {r.RunId}  {r.Mode}，共 {r.Items} 项：" +
+                $"擦除 {r.Removed}、快照 {r.Snapshotted}、占用跳过 {r.Locked}、失败 {r.Failed}，{Fs.Human(r.Bytes)}");
+            if (r.Snapshotted > 0)
+                Log($"      ⚠ 该轮有 {r.Snapshotted} 项进了快照，未 purge 前令牌仍在磁盘上");
+        }
     }
 
     private async void OnScan(object sender, RoutedEventArgs e)
@@ -126,7 +156,8 @@ public partial class MainWindow : Window
         if (confirm != MessageBoxResult.Yes)
             return;
 
-        SetBusy(true);
+        SetBusy(true, targets.Count);
+        _cts = new CancellationTokenSource();
         var settings = new CleanSettings
         {
             Reversible = reversible,
@@ -135,14 +166,17 @@ public partial class MainWindow : Window
 
         try
         {
-            var result = await Task.Run(() => new CleanEngine(CleanerRegistry.All).Execute(targets, settings));
+            var progress = new Progress<int>(n => Progress.Value = n);
+            var result = await Task.Run(
+                () => new CleanEngine(CleanerRegistry.All).Execute(targets, settings, progress, _cts.Token),
+                _cts.Token);
             _lastRunId = result.RunId;
 
             var byPath = _rows.ToDictionary(r => r.Target.Path, r => r);
             foreach (var outcome in result.Outcomes)
             {
                 if (byPath.TryGetValue(outcome.Target.Path, out var row))
-                    row.MarkDone(Describe(outcome.Status, outcome.Target.Level));
+                    row.MarkDone(Describe(outcome.Status));
                 if (outcome.Error is not null)
                     Log($"  {outcome.Target.App} / {outcome.Target.Item} — {outcome.Error}");
             }
@@ -151,6 +185,8 @@ public partial class MainWindow : Window
                 $"本轮完成 {result.Succeeded} 项（{Fs.Human(result.FreedBytes)}），占用跳过 {result.Locked}，失败 {result.Failed}，" +
                 $"耗时 {result.Elapsed.TotalSeconds:0.##}s。";
             Log(SummaryText.Text);
+            if (result.Cancelled)
+                Log($"已取消：{targets.Count - result.Outcomes.Count} 项完全没动过，重新扫描后仍可清理。");
             if (result.Outcomes.Any(o => o.Status == OutcomeStatus.Snapshotted))
                 Log($"快照号 {result.RunId}：可用\"还原上次快照\"回滚；确认可用后请用\"清空所有快照\"完成最终擦除。");
 
@@ -162,11 +198,13 @@ public partial class MainWindow : Window
         }
         finally
         {
+            _cts?.Dispose();
+            _cts = null;
             SetBusy(false);
         }
     }
 
-    private static string Describe(OutcomeStatus status, TraceLevel level) => status switch
+    private static string Describe(OutcomeStatus status) => status switch
     {
         OutcomeStatus.Removed => "已擦除",
         OutcomeStatus.Snapshotted => "已进快照",

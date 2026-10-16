@@ -38,12 +38,26 @@
                  TextWrapping="Wrap" />
     </Border>
 
-    <!-- 日志 -->
+    <!-- 日志（最外层底部） -->
     <Border DockPanel.Dock="Bottom" Background="White" BorderBrush="#D1D5DB" BorderThickness="1"
             CornerRadius="4" Height="132" Margin="0,8,0,0">
       <TextBox x:Name="LogBox" IsReadOnly="True" BorderThickness="0" VerticalScrollBarVisibility="Auto"
                TextWrapping="NoWrap" FontFamily="Consolas, Microsoft YaHei UI" FontSize="12" Padding="8" />
     </Border>
+
+    <!-- 进度与历史（贴在明细表下方） -->
+    <Grid DockPanel.Dock="Bottom" Margin="0,4,0,0">
+      <Grid.ColumnDefinitions>
+        <ColumnDefinition Width="*" />
+        <ColumnDefinition Width="Auto" />
+        <ColumnDefinition Width="Auto" />
+      </Grid.ColumnDefinitions>
+      <ProgressBar x:Name="Progress" Grid.Column="0" Height="6" IsIndeterminate="False"
+                   VerticalAlignment="Center" Foreground="#2563EB" />
+      <Button Grid.Column="1" Content="取消剩余项" Click="OnCancel" MinWidth="96" Margin="8,0,0,0"
+              IsEnabled="False" x:Name="BtnCancel" />
+      <Button Grid.Column="2" Content="查看清理历史" Click="OnHistory" MinWidth="104" Margin="8,0,0,0" />
+    </Grid>
 
     <!-- 明细 -->
     <ListView x:Name="Rows" Background="White" BorderBrush="#D1D5DB" BorderThickness="1"

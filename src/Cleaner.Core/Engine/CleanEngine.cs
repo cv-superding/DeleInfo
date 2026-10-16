@@ -28,7 +28,11 @@ public sealed class CleanEngine
 
     public CleanEngine(IReadOnlyList<ICleaner> cleaners) => _cleaners = cleaners;
 
-    public CleanResult Execute(IReadOnlyList<CleanTarget> targets, CleanSettings settings, CancellationToken ct = default)
+    public CleanResult Execute(
+        IReadOnlyList<CleanTarget> targets,
+        CleanSettings settings,
+        IProgress<int>? progress = null,
+        CancellationToken ct = default)
     {
         var sw = Stopwatch.StartNew();
         var runId = DateTime.Now.ToString("yyyyMMdd-HHmmss") + "-" + Guid.NewGuid().ToString("N")[..6];
@@ -38,20 +42,33 @@ public sealed class CleanEngine
 
         var innerParallel = Math.Clamp(settings.MaxParallelism / 4, 2, 8);
 
-        Parallel.ForEach(
-            targets.Where(t => t.Selected),
-            new ParallelOptions { MaxDegreeOfParallelism = settings.MaxParallelism, CancellationToken = ct },
-            t =>
-            {
-                outcomes.Add(RemoveOne(t, settings, store, runId, snapshotEntries, innerParallel));
-            });
+        var selected = targets.Where(t => t.Selected).ToList();
+        var done = 0;
+        var cancelled = false;
+
+        try
+        {
+            Parallel.ForEach(
+                selected,
+                new ParallelOptions { MaxDegreeOfParallelism = settings.MaxParallelism, CancellationToken = ct },
+                t =>
+                {
+                    outcomes.Add(RemoveOne(t, settings, store, runId, snapshotEntries, innerParallel));
+                    progress?.Report(Interlocked.Increment(ref done));
+                });
+        }
+        catch (OperationCanceledException)
+        {
+            // 取消只意味着"剩下的别动"，已经处理完的项是真实结果，不能当失败丢掉。
+            cancelled = true;
+        }
 
         sw.Stop();
 
         if (!snapshotEntries.IsEmpty)
             store.WriteManifest(runId, snapshotEntries.OrderBy(e => e.Original, StringComparer.OrdinalIgnoreCase), DateTime.Now);
 
-        return new CleanResult
+        var result = new CleanResult
         {
             RunId = runId,
             Outcomes = outcomes
@@ -59,7 +76,11 @@ public sealed class CleanEngine
                 .ThenBy(o => o.Status)
                 .ToList(),
             Elapsed = sw.Elapsed,
+            Cancelled = cancelled,
         };
+
+        RunHistory.Record(result, settings, selected);
+        return result;
     }
 
     private TargetOutcome RemoveOne(

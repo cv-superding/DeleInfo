@@ -74,6 +74,9 @@ public sealed class CleanResult
     public required IReadOnlyList<TargetOutcome> Outcomes { get; init; }
     public required TimeSpan Elapsed { get; init; }
 
+    /// <summary>用户中途取消：Outcomes 里是已完成的部分，未处理的项保持原样。</summary>
+    public bool Cancelled { get; init; }
+
     public long FreedBytes => Outcomes.Where(o => o.Status == OutcomeStatus.Removed || o.Status == OutcomeStatus.Snapshotted).Sum(o => o.Bytes);
     public int Succeeded => Outcomes.Count(o => o.Status is OutcomeStatus.Removed or OutcomeStatus.Snapshotted);
     public int Failed => Outcomes.Count(o => o.Status == OutcomeStatus.Failed);
