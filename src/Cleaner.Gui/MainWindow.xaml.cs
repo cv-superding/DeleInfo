@@ -31,6 +31,9 @@ public partial class MainWindow : Window
         ThemeManager.ApplyTitleBar(this);
         BtnTheme.Content = ThemeManager.IsDark ? "浅色模式" : "深色模式";
         SourceInitialized += (_, _) => ThemeManager.ApplyTitleBar(this);
+        // 默认焦点会落到第一个芯片上，那圈焦点环看着像画歪了；交给主操作按钮更说得通。
+        // 用 Activated 而不是 ContentRendered：窗口没被真正激活时 Focus() 会静默失败。
+        Activated += (_, _) => BtnScan.Focus();
 
         Log($"快照目录：{_store.Root}");
         UpdateStats(null);

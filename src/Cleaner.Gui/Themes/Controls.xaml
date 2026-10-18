@@ -7,7 +7,7 @@
     <Setter Property="Control.Template">
       <Setter.Value>
         <ControlTemplate>
-          <Border Margin="-3" CornerRadius="11" BorderBrush="{DynamicResource AccentBrush}"
+          <Border Margin="-3" CornerRadius="12" BorderBrush="{DynamicResource AccentBrush}"
                   BorderThickness="1.6" SnapsToDevicePixels="True" />
         </ControlTemplate>
       </Setter.Value>
@@ -171,11 +171,11 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="CheckBox">
-          <Border x:Name="Ring" CornerRadius="999" Background="{DynamicResource ChipBackground}"
+          <Border x:Name="Ring" CornerRadius="9" Background="{DynamicResource ChipBackground}"
                   BorderBrush="{DynamicResource ChipBorder}" BorderThickness="1" Padding="12,6">
                     <StackPanel Orientation="Horizontal">
                       <TextBlock x:Name="Mark" Text="&#xE73E;" FontFamily="Segoe MDL2 Assets"
-                                 FontSize="11" VerticalAlignment="Center" Margin="0,0,7,0"
+                                 FontSize="12" VerticalAlignment="Center" Margin="0,0,7,0"
                                  Foreground="{DynamicResource AccentBrush}" Visibility="Collapsed" />
                       <ContentPresenter VerticalAlignment="Center" />
                     </StackPanel>
